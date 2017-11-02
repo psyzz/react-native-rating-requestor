@@ -87,6 +87,20 @@ export default class RatingRequestor {
 		);	
 	}
 
+	showRating(callback = () => {}) {
+		let storeUrl = Platform.OS === 'ios' ?
+			'http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=' + _config.appStoreId + '&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8' :
+			'market://details?id=' + _config.appStoreId;
+		RatingsData.recordRated(); 
+		callback(true, 'accept');
+		// This API is only available on iOS 10.3 or later
+		if (Platform.OS === 'ios' && StoreReview.isAvailable) {
+			StoreReview.requestReview();
+		} else {
+			Linking.openURL(storeUrl);
+		}
+	}
+
 	/**
 	 * Call when a positive interaction has occurred within your application. Depending on the number
 	 * of times this has occurred and your timing function, this may display a rating request dialog.
